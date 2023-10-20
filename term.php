@@ -126,6 +126,16 @@
                                                     <label>Academic Year:</label>
                                                     <input id="acad-year" type="text" name="acad-year" placeholder="e.g 2000-20001" class="form-control" required>
                                                 </div>
+                                                <div class="form-group">
+                                                    <label>Semester</label><br>
+                                                    <select id="add_term" name="term" class="form-control"></select>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="" id="isActiveChecked" checked>
+                                                    <label class="form-check-label" for="isActiveChecked">
+                                                        Is Active
+                                                    </label>
+                                                </div>
                                             </div>
                                             <div class="modal-footer">
                                             <input type="button" class="btn btn-default" data-dismiss="modal" value="Cancel">
@@ -313,28 +323,63 @@
     <script src="js/sb-admin-2.min.js"></script>
 
     <!-- Page level plugins -->
-    <script src="vendor/chart.js/Chart.min.js"></script>
+    <!-- <script src="vendor/chart.js/Chart.min.js"></script> -->
 
     <!-- Page level custom scripts -->
-    <script src="js/demo/chart-area-demo.js"></script>
-    <script src="js/demo/chart-pie-demo.js"></script>
+    <!-- <script src="js/demo/chart-area-demo.js"></script>
+    <script src="js/demo/chart-pie-demo.js"></script> -->
+    
     <script>
+        $(document).ready(function() {
+            $.ajax({
+                type: "GET",
+                url: 'getterm.php',
+                data: {},
+            }).done(function(response) {
+                //clear deptcode combobox
+                $('#add_term').html('');
 
+                //add all to combobox
+                let data = "<option value='0'>Select Semester</option>";
+                let info = data+response;
+                $('#add_term').html(info);
+            });
+        });
 
         $("#btn-submit").on("click", function(e) {
             e.preventDefault();
 
             var acadYear = document.querySelector('#acad-year');
+            var termID = document.querySelector('#add_term');
+            var isActiveChecked = $('#isActiveChecked').is(":checked")
 
+            var isActive = 0;
+            if (isActiveChecked == true) {
+                isActive = 1;
+            }
+            
             if ($(acadYear).val() != "") {
-                $.ajax({
-                    type: "POST",
-                    url: 'addterm.php',
-                    data: {acadYear: $(acadYear).val()},
-                }).done(function(response) {
-                    console.log(response);
-                    location.reload();
-                });
+                if ($(termID).val() != 0) {
+                    $.ajax({
+                        type: "POST",
+                        url: 'addterm.php',
+                        data: {acadYear: $(acadYear).val(), termID: $(termID).val(), isActive: isActive},
+                        success: function(succ) {
+                            if (succ == "success") {
+                                location.reload();
+                            }else{
+                                alert(succ);
+                                $(acadYear).focus();
+                            }
+                        },
+                        error: function(err){
+                            alert(err);
+                        }
+                    });
+                }else{
+                    alert("Semester is required");
+                    $(termID).focus();
+                }
             }else{
                 alert("Academic Year is required");
                 $(acadYear).focus();
