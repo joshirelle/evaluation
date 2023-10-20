@@ -81,7 +81,18 @@
                                         ?>
                                         <p style="font-weight:bold; text-align: left;">ACADEMIC YEAR: <?=$sy?>
                                         <span style="float:right; margin-right: 200px"> SEMESTER: <?=$term?> </span></p>
-                                        <p class="pt-2"style="font-weight:bold;">Evaluation Status: - </p>
+                                        
+                                        <?php 
+                                            $sql = "SELECT (SELECT COUNT(*) TOTAL FROM faculty) TOTAL, 
+                                                    COUNT(*) TOTAL_REM FROM faculty WHERE facNum NOT IN (SELECT fmid FROM eva)";
+                                            $stmt = $pdo->prepare($sql);
+                                            $stmt->execute();
+                                            while($res = $stmt->fetch()) :
+                                                $total = $res["TOTAL"];
+                                                $totaleva = $res["TOTAL_REM"];
+                                            endwhile;
+                                        ?>
+                                        <p class="pt-2"style="font-weight:bold;">Evaluation Status: <?= ($totaleva == $total) ? "FINISHED" : "UNFINISHED ($totaleva/$total)" ?></p>
                                     </div>
                                 </div>
                             </div>
