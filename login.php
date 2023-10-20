@@ -165,11 +165,14 @@
                             $stmt_1->execute();
                             while($c_result = $stmt_1->fetch()) :
                                 $sy=$c_result["sy"];
+                                $term=($c_result["termID"] == "1") ? "First Semester" : "Second Semester";
                             endwhile;
                         ?>
-                    
+
                         <form id="login-form" action="index1.php" method="POST">
-                            <h3>S.Y <?php echo $sy; ?></h3>
+                            <div>
+                                <h3>S.Y <?php echo $sy; ?><br \><?php echo $term; ?></h3>
+                            </div>
 						    <input type="text" id="studentnum" class="form-control form-control-lg" placeholder="STUDENT NUMBER" required>
 						    <input type="hidden" id="deptID" name="department">
                             <input type="text" id="deptname" name="departmentname" style="margin-right: 300px;"placeholder="DEPARTMENT" disabled>
